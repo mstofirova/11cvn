@@ -21,7 +21,7 @@
 
             <nav id="menuIts" class="menu mnHide">
                 <a href="#welcome">Welcome!</a>
-                <a href="#articles/1/10">Articles</a>
+                <a href="#articles/0/300">Articles</a>
                 <a href="#addArticle">Add article</a>
                 <a href="#opinions">Visitor opinions</a>
                 <a href="#addOpinion">Add your opinion</a>
@@ -90,51 +90,6 @@
 
     </script>
 
-    <script id="template-addArticle" type="text/template">
-        <form id="articleAddForm" onsubmit="return {{formSubmitCall}}">
-            <label for="author">Author:</label>
-            <input type="text" name="author" id="authors" size="50" title="Article author, max. length 100 characters." maxlength="100" placeholder="e.g. Ján Trieska" />
-            <br>
-            <label for="title">Title:</label>
-            <input type="text" name="title" id="titles" size="50"  maxlength="100" pattern="\S[\S\s]*" required title="Article title, mandatory item, max. length: 100 characters, the first character must not be a space." placeholder="e.g. My story." />
-            <br>
-            <label for="imageLink">Image (url):</label>
-            <input type="url" name="imageLink" id="imageLinks"  size="50" title="Image URL, max. length 100 characters." maxlength="100"/>
-            <br>
-            <label></label><button type="button" id="btShowFileUploads" onclick="showFileUpload()">Upload image</button>
-
-            <fieldset class="added hiddenElm" id="fsetFileUploads">
-                <legend>Image Upload</legend>
-                <input type="file" id="flElms" name="file" accept="image/jpeg, image/png"/>
-                <br />
-                <button type="button" id="btFileUploads" onclick="uploadImg('{{urlBase}}')">Send image to server</button>
-                <button type="button" id="btCancelFileUploads" onclick="cancelFileUpload()">Cancel uploading</button>
-            </fieldset>
-
-
-            <br>
-            <label for="content">Article content:</label>
-            <textarea
-                    name="content" id="contents" spellcheck="true" lang="sk"
-                    cols="50" rows="20" required
-                    title="Article content, mandatory item, can be plain text or in HTML.">{{content}}</textarea>
-            <br>
-            <label for="tags">Keywords:</label>
-            <input  type="text" name="tags" id="tagss"  size="50"
-                    title="Keyword list, comma separated." placeholder="e.g. village, drama" />
-
-            <br>
-            <br>
-            <button type="reset">
-                Reset Form
-            </button>
-            <button type="submit">
-                {{submitBtTitle}}
-            </button>
-
-        </form>
-
-</script>
 
     <script id="template-opinions" type="text/template">
         <article id="artOpinions">
@@ -275,7 +230,7 @@
                 <br>
                 <label></label><button type="button" id="btShowFileUpload" onclick="showFileUpload()">Upload image</button>
 
-                <fieldset class="added hiddenElm" id="fsetFileUpload">
+                <fieldset class="added hiddenElm" id="fsetFileUpload" >
                     <legend>Image Upload</legend>
                     <input type="file" id="flElm" name="file" accept="image/jpeg, image/png"/>
                     <br />

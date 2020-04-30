@@ -219,26 +219,30 @@ function processArtEditFrmData(event,articleId,offset, totalCount, serverUrl){
         .finally(() => window.location.hash=`#article/${articleId}/${offset}/${totalCount}`);
 
 }
-
-function deleteData(event,articleId, offset, totalCount, serverUrl) {
-    const id2Delete =  articleId;
+function deleteData(event, articleId, offset, totalCount, serverUrl) {
+    //event.preventDefault();
+    const id2Delete = articleId;
+    //2. Set up the request
     const deleteReqSettings = //an object wih settings of the request
-
         {
             method: 'DELETE'
         };
 
+
+    //3. Execute the request
     fetch(`${serverUrl}/article/${id2Delete}`, deleteReqSettings)  //now we need the second parameter, an object wih settings of the request.
         .then(response => {      //fetch promise fullfilled (operation completed successfully)
             if (response.ok) {    //successful execution includes an error response from the server. So we have to check the return status of the response here.
-                window.alert("article successfully deleted")
+                // outpElm.innerHTML+=`Article successfully deleted.`; //no response this time, so we end here
+                //return response.json();
+                window.alert("Delete article was successful");
             } else { //if we get server error
                 return Promise.reject(new Error(`Server answered with ${response.status}: ${response.statusText}.`)); //we return a rejected promise to be catched later
             }
         })
         .catch(error => { ////here we process all the failed promises
-            window.alert("Attempt failed");
+            window.alert(`Failed to delete article of server. ${error}`);
         });
-}
 
+}
 

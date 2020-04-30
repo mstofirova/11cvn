@@ -25,9 +25,9 @@ export default[
         hash:"addArticle",
         target:"router-view",
         getTemplate:(targetElm) =>
-    document.getElementById(targetElm).innerHTML = document.getElementById("template-addArticle").innerHTML
+            document.getElementById(targetElm).innerHTML = document.getElementById("template-addArticle").innerHTML
 
-},
+    },
     {
         hash:"opinions",
         target:"router-view",
@@ -82,11 +82,12 @@ function fetchAndDisplayArticles(targetElm, offsetFromHash, totalCountFromHash){
 
     const offset=Number(offsetFromHash);
     const totalCount=Number(totalCountFromHash);
+    console.log("ja som total"+totalCount)
 
     let urlQuery = "";
 
     if (offset && totalCount){
-        urlQuery=`?offset=${(offset-1)*articlesPerPage}&max=${articlesPerPage}`;
+        urlQuery=`?offset=${offset}&max=${articlesPerPage}`;
     }else{
         urlQuery=`?max=${articlesPerPage}`;
     }
@@ -103,8 +104,7 @@ function fetchAndDisplayArticles(targetElm, offsetFromHash, totalCountFromHash){
         })
         .then(responseJSON => {
             addArtDetailLink2ResponseJson(responseJSON);
-            console.log(responseJSON.meta);
-            f(targetElm,offsetFromHash,totalCount,responseJSON.articles);
+            f(targetElm,offsetFromHash-1,responseJSON.meta.totalCount,responseJSON.articles);
         })
         .catch (error => { ////here we process all the failed promises
             const errMsgObj = {errMessage:error};
@@ -114,20 +114,19 @@ function fetchAndDisplayArticles(targetElm, offsetFromHash, totalCountFromHash){
                     errMsgObj
                 );
         });
-}
-function addArtDetailLink2ResponseJson(responseJSON){
-    responseJSON.articles =
-        responseJSON.articles.map(
-            article =>(
-                {
-                    ...article,
-                    detailLink:`#article/${article.id}/${responseJSON.meta.offset}/${responseJSON.meta.totalCount}`
-
-                }
-            )
-        );
-    console.log(responseJSON.articles);
-}
+    }
+    function addArtDetailLink2ResponseJson(responseJSON){
+        responseJSON.articles =
+            responseJSON.articles.map(
+                article =>(
+                    {
+                        ...article,
+                        detailLink:`#article/${article.id}/${responseJSON.meta.offset}/${responseJSON.meta.totalCount}`
+                    }
+                )
+            );
+        console.log(responseJSON.articles);
+    }
 
 function f(targetElm,current,totalCount,array) {
     current=Number(current);
@@ -140,11 +139,11 @@ function f(targetElm,current,totalCount,array) {
     };
 
     if(current>1){
-        data4rendering.prevPage=current-1;
+        data4rendering.prevPage=current-articlesPerPage;
     }
 
-    if(current<totalCount){
-        data4rendering.nextPage=current+1;
+    if(current+articlesPerPage<totalCount){
+        data4rendering.nextPage=current+articlesPerPage;
     }
     console.log(data4rendering)
     document.getElementById(targetElm).innerHTML = Mustache.render(
@@ -243,6 +242,7 @@ function deleteArticle(targetElm, artIdFromHash, offsetFromHash, totalCountFromH
                     document.getElementById("template-article").innerHTML,
                     responseJSON
                 );
+            window.location=`#articles/${offsetFromHash}/${totalCountFromHash}`;
             fetchAndDisplayArticles(targetElm,offsetFromHash,totalCountFromHash);
         })
         .catch (error => {

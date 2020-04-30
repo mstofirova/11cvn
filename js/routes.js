@@ -24,8 +24,10 @@ export default[
     {
         hash:"addArticle",
         target:"router-view",
-        getTemplate: addNewArticle
-    },
+        getTemplate:(targetElm) =>
+    document.getElementById(targetElm).innerHTML = document.getElementById("template-addArticle").innerHTML
+
+},
     {
         hash:"opinions",
         target:"router-view",

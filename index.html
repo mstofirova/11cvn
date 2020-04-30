@@ -90,8 +90,7 @@
 
     </script>
 
-    <script id="template-addArticles" type="text/template">
-        <a href="articleForm">ukaz</a>
+    <script id="template-addArticle" type="text/template">
         <form id="articleAddForm" onsubmit="return {{formSubmitCall}}">
             <label for="author">Author:</label>
             <input type="text" name="author" id="authors" size="50" title="Article author, max. length 100 characters." maxlength="100" placeholder="e.g. Ján Trieska" />
@@ -121,7 +120,7 @@
                     title="Article content, mandatory item, can be plain text or in HTML.">{{content}}</textarea>
             <br>
             <label for="tags">Keywords:</label>
-            <input  type="text" name="tags" id="tagss" value="{{tags}}" size="50"
+            <input  type="text" name="tags" id="tagss"  size="50"
                     title="Keyword list, comma separated." placeholder="e.g. village, drama" />
 
             <br>

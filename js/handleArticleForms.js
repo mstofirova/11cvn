@@ -139,7 +139,13 @@ function uploadImg(serverUrl) {
  * @param serverUrl - basic part of the server url, without the service specification, i.e.  https://wt.kpi.fei.tuke.sk/api.
 
  */
-function processArtEditFrmData(event,articleId,offset, totalCount, serverUrl){
+function processArtEditFrmData(event,articleId,offset, totalCount, serverUrl, ppParam){
+    if(!ppParam && !serverUrl){
+        serverUrl=articleId;
+        ppParam=offset;
+        console.log("nastalachyba")
+
+    }
     event.preventDefault();
 
 
@@ -190,7 +196,7 @@ function processArtEditFrmData(event,articleId,offset, totalCount, serverUrl){
 
     const postReqSettings = //an object wih settings of the request
         {
-            method: 'PUT',
+            method: ppParam,
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
             },
@@ -201,22 +207,44 @@ function processArtEditFrmData(event,articleId,offset, totalCount, serverUrl){
     //3. Execute the request
 
 
-    fetch(`${serverUrl}/article/${articleId}`, postReqSettings)  //now we need the second parameter, an object wih settings of the request.
-        .then(response => {      //fetch promise fullfilled (operation completed successfully)
-            if (response.ok) {    //successful execution includes an error response from the server. So we have to check the return status of the response here.
-                return response.json(); //we return a new promise with the response data in JSON to be processed
-            } else { //if we get server error
-                return Promise.reject(new Error(`Server answered with ${response.status}: ${response.statusText}.`)); //we return a rejected promise to be catched later
-            }
-        })
-        .then(responseJSON => { //here we process the returned response data in JSON ...
-            window.alert("Updated article successfully saved on server");
-        })
-        .catch(error => { ////here we process all the failed promises
-            window.alert(`Failed to save the updated article on server. ${error}`);
+    if(ppParam==='POST'){
+        console.log("som tu")
+        fetch(`${serverUrl}/article`, postReqSettings)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    return Promise.reject(new Error(`Server answered with ${response.status}: ${response.statusText}.`));
+                }
+            })
+            .then(responseJSON => {
+                window.alert("New article successfully saved on server");
+            })
+            .catch(error => {
+                window.alert(`Failed to save the new article on server. ${error}`);
 
-        })
-        .finally(() => window.location.hash=`#article/${articleId}/${offset}/${totalCount}`);
+            })
+            // .finally(() => window.location.hash = `#article/${offset}/${totalCount}`);
+    }
+    else if (ppParam==='PUT'){
+        fetch(`${serverUrl}/article/${articleId}`, postReqSettings)  //now we need the second parameter, an object wih settings of the request.
+            .then(response => {      //fetch promise fullfilled (operation completed successfully)
+                if (response.ok) {    //successful execution includes an error response from the server. So we have to check the return status of the response here.
+                    return response.json(); //we return a new promise with the response data in JSON to be processed
+                } else { //if we get server error
+                    return Promise.reject(new Error(`Server answered with ${response.status}: ${response.statusText}.`)); //we return a rejected promise to be catched later
+                }
+            })
+            .then(responseJSON => { //here we process the returned response data in JSON ...
+                window.alert("Updated article successfully saved on server");
+            })
+            .catch(error => { ////here we process all the failed promises
+                window.alert(`Failed to save the updated article on server. ${error}`);
+
+            })
+            .finally(() => window.location.hash=`#article/${articleId}/${offset}/${totalCount}`);
+    }
+
 
 }
 function deleteData(event, articleId, offset, totalCount, serverUrl) {

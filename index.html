@@ -21,7 +21,7 @@
 
             <nav id="menuIts" class="menu mnHide">
                 <a href="#welcome">Welcome!</a>
-                <a href="#articles/0/300">Articles</a>
+                <a href="#articles/1/300">Articles</a>
                 <a href="#addArticle">Add article</a>
                 <a href="#opinions">Visitor opinions</a>
                 <a href="#addOpinion">Add your opinion</a>
@@ -62,6 +62,9 @@
         {{#articles}}
         <article>
             <h2><a href="{{detailLink}}">{{title}}</a></h2>
+            <div>
+                {{{content}}}
+            </div>
             <p>
                 by {{author}}
             </p>

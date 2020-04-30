@@ -24,8 +24,7 @@ export default[
     {
         hash:"addArticle",
         target:"router-view",
-        getTemplate:(targetElm) =>
-            document.getElementById(targetElm).innerHTML = document.getElementById("template-addArticle").innerHTML
+        getTemplate:addNewArticle
 
     },
     {
@@ -80,21 +79,25 @@ function createHtml4opinions(targetElm){
 
 function fetchAndDisplayArticles(targetElm, offsetFromHash, totalCountFromHash){
 
-    const offset=Number(offsetFromHash);
+    const offset=Number(offsetFromHash)-1;
     const totalCount=Number(totalCountFromHash);
-    console.log("ja som total"+totalCount)
+    console.log("ja som total"+totalCount);
+
+    let articleArray = [];
 
     let urlQuery = "";
+    let size;
 
     if (offset && totalCount){
         urlQuery=`?offset=${offset}&max=${articlesPerPage}`;
     }else{
         urlQuery=`?max=${articlesPerPage}`;
     }
+    const newUrl= urlBase+"/article"
 
-    const url = `${urlBase}/article${urlQuery}`;
+    // const url = `${urlBase}/article${urlQuery}`;
 
-    fetch(url)
+    fetch(newUrl+urlQuery)
         .then(response =>{
             if(response.ok){
                 return response.json();
@@ -102,10 +105,60 @@ function fetchAndDisplayArticles(targetElm, offsetFromHash, totalCountFromHash){
                 return Promise.reject(new Error(`Server answered with ${response.status}: ${response.statusText}.`));
             }
         })
-        .then(responseJSON => {
-            addArtDetailLink2ResponseJson(responseJSON);
-            f(targetElm,offsetFromHash-1,responseJSON.meta.totalCount,responseJSON.articles);
+
+        .then(responseJSON=>{
+            articleArray = responseJSON.articles;
+            size= responseJSON.meta.totalCount;
+            // addArtDetailLink2ResponseJson(responseJSON);
+            return Promise.resolve();
         })
+
+        .then(() => {
+            let artRequests = articleArray.map(
+                article => fetch(`${newUrl}/${article.id}/${urlQuery}`)
+            );
+            console.log("ja idem")
+            return Promise.all(artRequests);
+        })
+
+        .then(responses => {
+            let failed = "";
+            for (let response of responses) {
+                if (!response.ok) failed += response.url + " "
+                console.log("ja ideem")
+            }
+            if (failed === ""){
+                return responses;
+            }else {
+                return  Promise.reject(new Error(`Failed to access the content of the articles with urls ${failed}.`));
+            }
+        })
+        .then(responses => Promise.all(responses.map(resp => resp.json())))
+
+        .then(articles => {
+            articles.forEach((article,index) =>{
+                articleArray[index].content=article.content;
+            });
+            return Promise.resolve();
+        })
+
+        .then( ()=> {
+            console.log("cyklus");
+            let text=[];
+            let i;
+            for(i=0; i<articleArray.length; i++) {
+                text[i] = {
+                    title: i+articleArray[i].title,
+                    content: articleArray[i].content,
+                    author: articleArray[i].author,
+                }
+            }
+            console.log(text);
+            f(targetElm,offsetFromHash,size,text);
+            // addArtDetailLink2ResponseJson(responseJSON)
+        })
+
+
         .catch (error => { ////here we process all the failed promises
             const errMsgObj = {errMessage:error};
             document.getElementById(targetElm).innerHTML =
@@ -131,6 +184,7 @@ function fetchAndDisplayArticles(targetElm, offsetFromHash, totalCountFromHash){
 function f(targetElm,current,totalCount,array) {
     current=Number(current);
     totalCount=Number(totalCount);
+    console.log("to ja nejdem");
 
     const data4rendering={
         currPage:current,
@@ -256,5 +310,39 @@ function deleteArticle(targetElm, artIdFromHash, offsetFromHash, totalCountFromH
 }
 
 function addNewArticle(targetElm) {
-
+    fetch(urlBase)
+        .then(response =>{
+            if(response.ok){
+                return response.json();
+            }else{ //if we get server error
+                return Promise.reject(new Error(`Server answered with ${response.status}: ${response.statusText}.`));
+            }
+        })
+        // .then(responseJSON => {
+        //     responseJSON.formTitle = "Article Add";
+        //     console.log("ale ja idem")
+        //     responseJSON.formSubmitCall =
+        //         `processArtEditFrmData(event,'${urlBase}', 'POST')`;
+        //     responseJSON.submitBtTitle = "Save article";
+        //     responseJSON.urlBase = urlBase;
+        //     const totalCount= responseJSON.meta.totalCount;
+        //     const offset=Math.round(totalCount/articlesPerPage)+articlesPerPage;
+        //
+        //
+        //     responseJSON.backLink = `#articles/${offset}/${totalCount}`;
+        //
+        //     document.getElementById(targetElm).innerHTML =
+        //         Mustache.render(
+        //             document.getElementById("template-article-form").innerHTML,
+        //             responseJSON
+        //         );
+        // })
+        .catch (error => { ////here we process all the failed promises
+            const errMsgObj = {errMessage:error};
+            document.getElementById(targetElm).innerHTML =
+                Mustache.render(
+                    document.getElementById("template-articles-error").innerHTML,
+                    errMsgObj
+                );
+        });
 }

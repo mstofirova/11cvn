@@ -1,0 +1,195 @@
+html {
+    font-size: 100%;
+    font-family: "Tw Cen MT", Arial, Helvetica, sans-serif;
+    font-style: normal; /*normal, italic, oblique (obl.-similar to italic*/
+    font-weight: normal; /*normal, bold*/
+    text-align: justify; /*justify, left, right, center*/
+    color: black;
+    background-image: url("background-white.jpg");
+}
+
+a:link, a:visited{
+    text-decoration: none;
+    color: rgb(63, 38, 0);
+}
+
+a:hover{
+    text-decoration: underline;
+    color: #982d3b;
+}
+
+bodyColor{
+    background-color: #F8F8F8;
+}
+
+bodyColor > * {
+    margin: 0.5rem;
+}
+
+bodyColor > header{
+    color: white;
+    border-radius: 1rem;
+    padding:0.5rem;
+    text-align:center;
+    background-color: #606060;
+}
+
+
+bodyColor > footer{
+    font-size: 0.8rem;
+}
+
+main footer{
+    margin-top: 0.5em;
+}
+
+main > article{
+    background-color: #F0F0F0;
+    border-radius: 1rem;
+    padding: 0.3rem;
+    margin-bottom: 1rem;
+    border: 5px solid #E0E0E0;
+}
+
+main > article > *{
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+main > article > h2{
+    background-color: #E8E8E8;
+    border-radius: 1rem;
+    margin: 0;
+}
+
+bodyColor > aside{
+    background-color: #F8F8F8;
+    border-radius: 1rem;
+    color: grey;
+    font-size: 0.9em;
+    height: 8em;
+    padding: 0.5em;
+}
+
+label {
+    vertical-align: top;
+    display: inline-block;
+    min-width: 10em;
+    margin-bottom: 1%;
+}
+
+.buttonForm {
+    margin-top: 3%;
+    margin-bottom: 2%;
+}
+
+/*iframe {*/
+/*    width: 90%;*/
+/*    height: 250px;*/
+/*}*/
+ #myFirstForm {
+    background-color: 	#F5F5F5;
+    border-radius: 2rem;
+    border: #E8E8E8 6px solid;
+}
+#myForm{
+    padding-left: 3%;
+}
+#textElm{
+    max-width: 95%;
+}
+figure img{
+    max-width: 100%;
+}
+/***********************************************************************************************************/
+/*FLEXBOX LAYOUT and media queries for the whole page*/
+bodyColor{
+    display: flex;
+    flex-direction: column;
+}
+li{
+    flex-grow: 1; /*aby zabrali celu sirku (to use the whole width)*/
+}
+bodyColor > footer{
+    order: 1; /*aby bol posledny. Ostatne maju implicitne hodnotu 0, tzn. sa zobrazia podla poradia v html (To be the last one displayed as the others have implicitly order=0)*/
+}
+
+
+
+@media only screen and (min-width: 600px){
+    bodyColor{
+        max-width: 53%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+
+@media only screen and (max-width: 599px){
+    bodyColor{
+        width: 100%;
+    }
+}
+
+
+
+
+/***********************************************************************************************************/
+/*Properties related to the dropdown menu*/
+
+.menu {
+    text-align: left;
+    padding-left: 0.5em;
+}
+
+#menuIts{
+    position:absolute;
+    padding: 0.5em;
+    max-width: 8em;
+    min-width: 7em;
+    border-radius: 0.5rem;
+    background-color: #F5F5F5;
+}
+
+#menuIts > a {
+    display: block;
+}
+
+#menuTitle{
+    border: 0;
+    background-color: #808080;
+    outline:none;
+}
+
+#menuTitle:hover, #menuIts > a:hover{
+    text-decoration: none;
+    color: #982d3b;
+    background-color: 	#FFFFFF;
+}
+
+.mnHide {display:none;}
+
+.mnShow {display:block;}
+
+
+
+/***********************************************************************************************************/
+/*Properties related to the form and rendered opinions*/
+
+label{
+    vertical-align: top;
+    display: inline-block; /*instead of inline (default) to make the width applicable*/
+    min-width: 5.5em;
+}
+
+form{
+    padding-bottom: 1em;
+}
+
+h3 > i {
+    font-size: 0.8em;
+}
+
+
+
+

@@ -1,0 +1,332 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="author" content="Stefan Korecko"/>
+    <link rel="stylesheet" href="css/normalize.css"/>
+    <link rel="stylesheet"
+          href="css/treesBlog.css"
+          media="screen"/>
+
+    <title>BooksLover</title>
+</head>
+<bodyColor>
+    <body>
+    <header>
+        <h1>Knižný denník</h1>
+
+
+        <div class="menu">
+            <button id="menuTitle" onclick="displayOrHideMenu()">Menu</button>
+
+            <nav id="menuIts" class="menu mnHide">
+                <a href="#welcome">Welcome!</a>
+                <a href="#articles/1/10">Articles</a>
+                <a href="#addArticle">Add article</a>
+                <a href="#opinions">Visitor opinions</a>
+                <a href="#addOpinion">Add your opinion</a>
+            </nav>
+
+        </div>
+
+    </header>
+
+    <main id="router-view">
+    </main>
+
+
+    <footer>
+        Napísala Michala Štofirová <a href="mailto:mi.stofirova@gmail.com">mi.stofirova@gmail.com</a> 1.3.2020
+        <br>
+        <i><small>Upozornenie! stranka a odkazy na nej, obsahuju udaje z inych stranok <b>( copyright :) )</b></small>
+        </i>
+    </footer>
+
+    <!--Templates for html, dynamically inserted by the router -->
+
+    <script id="template-welcome" type="text/template">
+        <article>
+            <h2>Welcome!</h2>
+
+            <p>
+                Zdravím volám sa Michala Štofirová študujem odbor Informatika na TUKE a zbožňujem knihy. Je to moja
+                vášeň, môj oddych.
+                Nie nebudú to knihy a o softvérovom inžinierstve. Každý ma slabosť pre niečo iné a ja ma slabosť pre
+                romány. Ako každá
+                druha žena, nič neobyčajné...
+            </p>
+        </article>
+    </script>
+
+    <script id="template-articles" type="text/template">
+        {{#articles}}
+        <article>
+            <h2><a href="{{detailLink}}">{{title}}</a></h2>
+            <p>
+                by {{author}}
+            </p>
+        </article>
+        {{/articles}}
+        <nav>
+            {{#prevPage}}
+            <a href="#articles/{{prevPage}}/{{pageCount}}"><< Previous page</a>
+            {{/prevPage}}
+            {{#nextPage}}
+            <a href="#articles/{{nextPage}}/{{pageCount}}">Next page >></a>
+            {{/nextPage}}
+        </nav>
+        <footer class="menuLink"><a href="#menuTitle">Back to the menu</a></footer>
+    </script>
+
+    <script id="template-articles-error" type="text/template">
+
+        <article>
+            <h2>Articles acquisition failed</h2>
+            <p>
+                {{errMessage}}
+            </p>
+        </article>
+        <footer class="menuLink"><a href="#menuTitle">Back to the menu</a></footer>
+
+    </script>
+
+    <script id="template-addArticles" type="text/template">
+        <a href="articleForm">ukaz</a>
+        <form id="articleAddForm" onsubmit="return {{formSubmitCall}}">
+            <label for="author">Author:</label>
+            <input type="text" name="author" id="authors" size="50" title="Article author, max. length 100 characters." maxlength="100" placeholder="e.g. Ján Trieska" />
+            <br>
+            <label for="title">Title:</label>
+            <input type="text" name="title" id="titles" size="50"  maxlength="100" pattern="\S[\S\s]*" required title="Article title, mandatory item, max. length: 100 characters, the first character must not be a space." placeholder="e.g. My story." />
+            <br>
+            <label for="imageLink">Image (url):</label>
+            <input type="url" name="imageLink" id="imageLinks"  size="50" title="Image URL, max. length 100 characters." maxlength="100"/>
+            <br>
+            <label></label><button type="button" id="btShowFileUploads" onclick="showFileUpload()">Upload image</button>
+
+            <fieldset class="added hiddenElm" id="fsetFileUploads">
+                <legend>Image Upload</legend>
+                <input type="file" id="flElms" name="file" accept="image/jpeg, image/png"/>
+                <br />
+                <button type="button" id="btFileUploads" onclick="uploadImg('{{urlBase}}')">Send image to server</button>
+                <button type="button" id="btCancelFileUploads" onclick="cancelFileUpload()">Cancel uploading</button>
+            </fieldset>
+
+
+            <br>
+            <label for="content">Article content:</label>
+            <textarea
+                    name="content" id="contents" spellcheck="true" lang="sk"
+                    cols="50" rows="20" required
+                    title="Article content, mandatory item, can be plain text or in HTML.">{{content}}</textarea>
+            <br>
+            <label for="tags">Keywords:</label>
+            <input  type="text" name="tags" id="tagss" value="{{tags}}" size="50"
+                    title="Keyword list, comma separated." placeholder="e.g. village, drama" />
+
+            <br>
+            <br>
+            <button type="reset">
+                Reset Form
+            </button>
+            <button type="submit">
+                {{submitBtTitle}}
+            </button>
+
+        </form>
+
+</script>
+
+    <script id="template-opinions" type="text/template">
+        <article id="artOpinions">
+            <h2>Visitor Opinions</h2>
+            {{#.}}
+            <section>
+                <h4>{{name}} <i>{{createdDate}}</i></h4>
+                <p>{{email}}</p>
+                <p>{{url}}</p>
+                <p>{{comment}}</p>
+                <p>{{loveBook}}</p>
+                <p>{{manyBook1}}</p>
+                <p>{{manyBook2}}</p>
+                <p>{{manyBook3}}</p>
+            </section>
+            {{/.}}
+            {{^.}}
+            <section>
+                Sorry, no opinions found.
+            </section>
+            {{/.}}
+            <footer class="menuLink"><a href="#menuTitle">Back to the menu</a></footer>
+        </article>
+    </script>
+
+    <script id="template-addOpinion" type="text/template">
+        <section id="myFirstForm">
+
+            <form id="myForm" method="get" target="frm" onsubmit="return processOpnFrmData(event)">
+
+                <h3> Formulár:</h3>
+                <p></p>
+
+                <label class="requiredLabel" for="nameElm">Meno:</label>
+                <input type="text" id="nameElm" name="name" required title="toto pole je poviné"
+                       minlength="1">
+
+                <br>
+
+                <label class="requiredLabel" for="emailElm">Email:</label>
+                <input type="email" id="emailElm" name="email" required title="toto pole je poviné">
+
+                <br>
+
+                <label for="urlElm">Web stránka (url):</label>
+                <input type="url" id="urlElm" name="url" placeholder="napr. http://www.tuke.sk">
+                <br>
+
+                <label for="textElm">Text:</label>
+                <textarea name="text" id="textElm" required title="toto pole je poviné"
+                          cols="50" rows="4" placeholder="Tu mozte napisat svoj komentar"></textarea>
+                <br>
+
+                <label for="questionElm">Radi čítate knihy?</label>
+                <input type="radio" id="questionElm" name="question" value=1 checked>
+                <label for="questionElm">milujem ich</label>
+                <input type="radio" id="questionElm2" name="question" value=2>
+                <label for="questionElm2">áno</label>
+                <input type="radio" id="questionElm3" name="question" value=3>
+                <label for="questionElm3">nie</label>
+                <p></p>
+
+                <input type="checkbox" id="bookElm" name="book50">
+                <label for="bookElm">Prečítali ste viac ako 50 knih?</label>
+                <br>
+
+                <input type="checkbox" id="book2Elm" name="bookTime">
+                <label for="bookElm"> Čítate knihy ak máre čas? </label>
+                <br>
+
+                <input type="checkbox" id="book3Elm" name="rates">
+                <label for="bookElm">Páčila sa vám táto stránka?</label>
+
+                <p></p>
+                <label for="wordElm">Kľúčové slová:</label>
+                <input type="text" id="wordElm" name="word" size="10" title="max. 30 znakov (characters)" maxlength="30"
+                       spellcheck="true" lang="sk"
+                       list="keyWords">
+                <datalist id="keyWords">
+                    <option>beletria</option>
+                    <option>román</option>
+                    <option>autor</option>
+                    <option>obsah</option>
+                </datalist>
+                <br>
+                <div class="buttonForm">
+                    <button type="reset"> Zmaž</button>
+                    <button type="submit"> Odoslať</button>
+                </div>
+
+
+            </form>
+        </section>
+    </script>
+
+    <script id="template-article" type="text/template">
+        <article>
+            <h3>{{title}}</h3>
+            <p>
+                by {{author}}
+            </p>
+            {{#imageLink}}
+            <figure>
+                <img src="{{imageLink}}" alt="article figure" />
+            </figure>
+            {{/imageLink}}
+            <div>{{{content}}}</div>
+            <p>
+                Keywords:
+                {{tags}}
+            </p>
+        </article>
+
+        <footer>
+            <a href="{{backLink}}" class="linkAsButton"><< Back</a>
+            <a href="{{editLink}}" class="linkAsButton">Edit</a>
+            <a href="{{deleteLink}}" class="linkAsButton">Delete</a>
+            <a href="#menuTitle" class="linkAsButton">Up to the menu</a>
+        </footer>
+
+    </script>
+
+    <script id="template-article-form" type="text/template">
+        <article>
+
+            <h2>{{formTitle}}</h2>
+            <br><br>
+
+            <form id="articleForm" onsubmit="return {{formSubmitCall}}">
+                <label for="author">Author:</label>
+                <input type="text" name="author" id="author" value="{{author}}" size="50" title="Article author, max. length 100 characters." maxlength="100" placeholder="e.g. Ján Trieska" />
+                <br>
+                <label for="title">Title:</label>
+                <input type="text" name="title" id="title" value="{{title}}" size="50"  maxlength="100" pattern="\S[\S\s]*" required title="Article title, mandatory item, max. length: 100 characters, the first character must not be a space." placeholder="e.g. My story." />
+                <br>
+                <label for="imageLink">Image (url):</label>
+                <input type="url" name="imageLink" id="imageLink" value="{{imageLink}}" size="50" title="Image URL, max. length 100 characters." maxlength="100"/>
+                <br>
+                <label></label><button type="button" id="btShowFileUpload" onclick="showFileUpload()">Upload image</button>
+
+                <fieldset class="added hiddenElm" id="fsetFileUpload">
+                    <legend>Image Upload</legend>
+                    <input type="file" id="flElm" name="file" accept="image/jpeg, image/png"/>
+                    <br />
+                    <button type="button" id="btFileUpload" onclick="uploadImg('{{urlBase}}')">Send image to server</button>
+                    <button type="button" id="btCancelFileUpload" onclick="cancelFileUpload()">Cancel uploading</button>
+                </fieldset>
+
+
+                <br>
+                <label for="content">Article content:</label>
+                <textarea
+                        name="content" id="content" spellcheck="true" lang="sk"
+                        cols="50" rows="20" required
+                        title="Article content, mandatory item, can be plain text or in HTML.">{{content}}</textarea>
+                <br>
+                <label for="tags">Keywords:</label>
+                <input  type="text" name="tags" id="tags" value="{{tags}}" size="50"
+                        title="Keyword list, comma separated." placeholder="e.g. village, drama" />
+
+                <br>
+                <br>
+                <button type="reset">
+                    Reset Form
+                </button>
+                <button type="submit">
+                    {{submitBtTitle}}
+                </button>
+
+            </form>
+
+        </article>
+
+        <footer>
+            <a href="{{backLink}}" class="linkAsButton"><< Back</a>
+            <a href="#menuTitle" class="linkAsButton">Up to the menu</a>
+        </footer>
+    </script>
+
+
+    <script src="js/mustache.min.js"></script>
+
+    <script src="js/mainMenu.js"></script>
+
+    <script src="js/addOpinion.js"></script>
+
+    <script src="js/handleArticleForms.js"></script>
+
+    <script type="module" src="js/routerInit.js"></script>
+
+    </body>
+</bodyColor>
+
+</html>
